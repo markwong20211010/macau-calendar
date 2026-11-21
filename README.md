@@ -16,8 +16,21 @@ data/history.json            逐日高低溫紀錄（Action 累積）
 data/holidays.json           2024–2035 澳門假期（官方 + 推估）
 scripts/fetch_weather.py     抓取程式（只用標準庫，無需安裝依賴）
 scripts/build_holidays.py    假期產生器（需要 cnlunar，僅新增年份時執行）
+tests/test_flip_navigation.py 翻頁導航回歸測試（Playwright）
 .github/workflows/weather.yml 定時任務
 ```
+
+## 跑測試（可選）
+
+改動翻頁邏輯後跑一次，確認導航沒被改壞：
+
+```bash
+pip install playwright && playwright install chromium
+python3 tests/test_flip_navigation.py
+```
+
+沒有下載 playwright 瀏覽器時，會自動改用系統裡的 Chrome／Chromium
+（也可以用 `CHROME_PATH=/路徑/chrome` 指定）。
 
 ## 假期資料怎麼來的
 

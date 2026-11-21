@@ -1044,6 +1044,11 @@
   }
 
   /* SECTION: flip */
+  function clearAnim(el) {
+    if (!el) return;
+    el.classList.remove("anim-next", "anim-prev", "fade-in");
+  }
+
   function flipTo(target, dir, targetYear) {
     var ty = targetYear || year;
     if (animating || target < 0 || target > 11) return;
@@ -1053,28 +1058,45 @@
 
     var current = stage.querySelector(".sheet.is-current");
     var incoming = buildSheet(ty, target);
+    var settled = false;
+    var timer = 0;
+
+    // 統一收尾：移除動畫 class，否則殘留的 anim-prev / fade-in 會在下一輪
+    // 把新的動畫規則蓋掉，導致 animationend 不再觸發、animating 永久卡死。
+    // timer 是兜底：動畫被瀏覽器跳過（分頁隱藏、降低動效）時也能解鎖。
+    function settle() {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      clearAnim(current);
+      clearAnim(incoming);
+      if (current && current.parentNode) current.remove();
+      incoming.classList.remove("is-under");
+      incoming.classList.add("is-current");
+      finish(target, ty);
+    }
+
+    clearAnim(current);
+    clearAnim(incoming);
 
     if (dir > 0) {
       incoming.classList.add("is-under");
       stage.appendChild(incoming);
+      void current.offsetWidth;
+      current.addEventListener("animationend", settle, { once: true });
       current.classList.add("anim-next");
-      current.addEventListener("animationend", function () {
-        current.remove();
-        incoming.classList.remove("is-under");
-        incoming.classList.add("is-current");
-        finish(target, ty);
-      }, { once: true });
     } else {
-      incoming.classList.add("is-current", "anim-prev");
       current.classList.remove("is-current");
       current.classList.add("is-under");
+      incoming.classList.add("is-current");
       stage.appendChild(incoming);
-      incoming.addEventListener("animationend", function () {
-        current.remove();
-        finish(target, ty);
-      }, { once: true });
+      void incoming.offsetWidth;
+      incoming.addEventListener("animationend", settle, { once: true });
+      incoming.classList.add("anim-prev");
     }
+    timer = window.setTimeout(settle, 1100);
   }
+
   function go(dir) {
     var m = idx + dir;
     var y = year;

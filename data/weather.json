@@ -1,10 +1,10 @@
 {
  "current": {
   "glyph": "⛅",
-  "humidity": 62,
+  "humidity": 57,
   "temp": 19,
   "text": "晴間雲",
-  "wind": "風速 10.1 km/h"
+  "wind": "風速 9.5 km/h"
  },
  "days": [
   {
@@ -112,6 +112,6 @@
  ],
  "place": "澳門",
  "source": "Open-Meteo · GitHub Action",
- "stamp": "2026-11-21 22:54 HKT",
- "updated": "2026-11-21T22:54:10+08:00"
+ "stamp": "2026-11-21 21:30 HKT",
+ "updated": "2026-11-21T21:30:46+08:00"
 }
