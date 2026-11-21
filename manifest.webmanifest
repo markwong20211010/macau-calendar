@@ -1,0 +1,36 @@
+{
+  "name": "澳門假期翻曆 · 天氣",
+  "short_name": "澳門假期",
+  "description": "澳門公眾假期翻頁月曆，附今日與未來七天天氣，並在本機累積你的天氣紀錄。",
+  "lang": "zh-Hant",
+  "start_url": "./澳門2027翻曆-v3.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2ece1",
+  "theme_color": "#242a31",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
