@@ -13,9 +13,35 @@ sw.js                        離線快取（資料檔走網路優先）
 icon-*.png, apple-touch-icon 圖示
 data/weather.json            即時天氣 + 未來 16 天預報（Action 產生）
 data/history.json            逐日高低溫紀錄（Action 累積）
+data/holidays.json           2024–2035 澳門假期（官方 + 推估）
 scripts/fetch_weather.py     抓取程式（只用標準庫，無需安裝依賴）
+scripts/build_holidays.py    假期產生器（需要 cnlunar，僅新增年份時執行）
 .github/workflows/weather.yml 定時任務
 ```
+
+## 假期資料怎麼來的
+
+`data/holidays.json` 分兩種來源，頁面會明確標示：
+
+- `official`：2026、2027 年，直接採用《澳門特別行政區公報》刊佈的日期表。
+- `inferred`：其他年份，官方尚未公佈，依《第 60/2000 號行政命令》的 20 天公眾假期，
+  再加「補假規則」推算：公眾假期碰到星期六或星期日 → 順延到之後第一個平日；
+  該平日若已是假期或已被其他補假佔用 → 再往後順延，如此類推。
+
+這條規則是先拿 2026、2027 的官方日期表逐條反推校驗過的——腳本每次執行都會先跑這個
+校驗（`校驗通過：推算規則可完整重現 2026、2027 官方日期表`），對不上就直接中止、不輸出。
+
+等某一年的官方名單公佈後（通常在前一年的 11–12 月），把它填進
+`scripts/build_holidays.py` 的 `OFFICIAL` 字典再重跑即可：
+
+```bash
+pip install cnlunar==0.2.5
+python3 scripts/build_holidays.py --check            # 只跑校驗
+python3 scripts/build_holidays.py --start 2024 --end 2035
+```
+
+推估年份在月曆頁會標「（推估）」，年份列右側顯示「依規則推估」，下方另有文字提醒
+「正式日期以公報為準」。
 
 ## 部署步驟
 
@@ -55,7 +81,7 @@ python3 scripts/fetch_weather.py --dry-run        # 不寫檔，只看結果
 
 ## 資料來源
 
-- 天氣：Open-Meteo（預報 `api.open-meteo.com`、歷史 `archive-api.open-meteo.com`），
+- 假期推算：農曆與二十四氣用 `cnlunar`；復活節用匿名格里戈里算法（預報 `api.open-meteo.com`、歷史 `archive-api.open-meteo.com`），
   座標 22.1987, 113.5439，時區 Asia/Macau，免費且無需 API key。
 - 假期：第 60/2000 號行政命令、行政公職局 2026／2027 年度假期通告。
 
