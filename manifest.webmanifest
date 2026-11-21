@@ -1,9 +1,9 @@
 {
   "name": "澳門假期翻曆 · 天氣",
   "short_name": "澳門假期",
-  "description": "澳門公眾假期翻頁月曆，附今日與未來七天天氣，並在本機累積你的天氣紀錄。",
+  "description": "澳門公眾假期翻頁月曆，附今日與未來七天天氣，資料由 GitHub Action 定時更新。",
   "lang": "zh-Hant",
-  "start_url": "./澳門2027翻曆-v3.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -11,7 +11,8 @@
   "theme_color": "#242a31",
   "categories": [
     "productivity",
-    "utilities"
+    "utilities",
+    "weather"
   ],
   "icons": [
     {

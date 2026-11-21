@@ -1,7 +1,9 @@
-const CACHE = "macau-cal-v3";
-const ENTRY = "./澳門2027翻曆-v3.html";
-const ASSETS = [
-  ENTRY,
+/* 澳門假期翻曆 · 離線快取
+   規則：資料檔（data/*.json）走網路優先，其餘走快取優先。 */
+const CACHE = "macau-cal-repo-v1";
+const SHELL = [
+  "./",
+  "./index.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
@@ -11,7 +13,7 @@ const ASSETS = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())
   );
 });
 
@@ -24,18 +26,35 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
-  const isWeather = event.request.url.indexOf("api.open-meteo.com") !== -1;
-  if (isWeather) return;
+  const req = event.request;
+  if (req.method !== "GET") return;
+
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;         // 外部 API 不介入
+
+  const isData = url.pathname.indexOf("/data/") !== -1;
+
+  if (isData) {
+    event.respondWith(
+      fetch(req)
+        .then((resp) => {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return resp;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
+    caches.match(req).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).then((resp) => {
+      return fetch(req).then((resp) => {
         const copy = resp.clone();
-        caches.open(CACHE).then((c) => c.put(event.request, copy)).catch(() => {});
+        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
         return resp;
-      }).catch(() => caches.match(ENTRY));
+      }).catch(() => caches.match("./index.html"));
     })
   );
 });

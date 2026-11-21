@@ -1,0 +1,39 @@
+name: Update Macau weather
+
+"on":
+  schedule:
+    # GitHub cron 用 UTC：每 3 小時一次（澳門時間 +8）
+    - cron: "5 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weather-update
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch weather
+        run: python3 scripts/fetch_weather.py
+
+      - name: Commit data
+        run: |
+          git config user.name "weather-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/weather.json data/history.json
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore(weather): update $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi

@@ -670,6 +670,7 @@
   };
 
   var ARCHIVE_KEY = "macau-wx-archive-v1";
+  var remoteHistory = {};
   var wx = { days: {}, cur: SEED.cur, stamp: SEED.stamp, source: SEED.source, live: false };
 
   for (var si = 0; si < SEED.days.length; si++) {
@@ -800,7 +801,7 @@
   }
 
   function renderLog() {
-    var a = loadArchive();
+    var a = allHistory();
     var keys = Object.keys(a).sort();
     var count = keys.length;
 
@@ -819,8 +820,11 @@
     }
 
     var note = document.getElementById("logNote");
+    var remote = Object.keys(remoteHistory).length > 0;
     if (count === 0) {
       note.textContent = "每次打開就記下當天的天氣，日子久了就是一份屬於你的澳門氣候記錄。";
+    } else if (remote) {
+      note.textContent = "已累積 " + count + " 天，其中站內資料由 GitHub Action 定時寫入；顏色越暖代表當日最高溫越高。";
     } else if (count < 30) {
       note.textContent = "已記下 " + count + " 天，持續打開就會慢慢長成一份年度記錄。";
     } else {
@@ -1120,11 +1124,63 @@
     window.setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
   });
 
+  function allHistory() {
+    var out = {}, k;
+    for (k in remoteHistory) {
+      if (Object.prototype.hasOwnProperty.call(remoteHistory, k)) out[k] = remoteHistory[k];
+    }
+    var local = loadArchive();
+    for (k in local) {
+      if (Object.prototype.hasOwnProperty.call(local, k)) out[k] = local[k];
+    }
+    return out;
+  }
+
+  function applyRemoteWeather(payload) {
+    if (!payload || !payload.days || !payload.current) return false;
+    var days = {}, i;
+    for (i = 0; i < payload.days.length; i++) {
+      var d = payload.days[i];
+      if (!d || !d.d) continue;
+      days[d.d] = { tmin: d.tmin, tmax: d.tmax, code: d.code };
+    }
+    wx.days = days;
+    wx.cur = payload.current;
+    wx.source = payload.source || "GitHub Action";
+    wx.stamp = payload.stamp || payload.updated || "";
+    wx.live = true;
+    return true;
+  }
+
+  function loadSiteData() {
+    if (!window.fetch) return;
+
+    fetch("data/weather.json?ts=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("no weather file"); return r.json(); })
+      .then(function (j) {
+        if (!applyRemoteWeather(j)) throw new Error("bad weather file");
+        renderWeather();
+        refreshCurrentSheet();
+        renderLog();
+      })
+      .catch(function () { refreshWeather(); });
+
+    fetch("data/history.json?ts=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { if (!r.ok) throw new Error("no history file"); return r.json(); })
+      .then(function (j) {
+        if (j && j.days) {
+          remoteHistory = j.days;
+          renderLog();
+        }
+      })
+      .catch(function () {});
+  }
+
   renderWeather();
   renderLog();
   renderPanel(year, idx);
   syncUI();
-  refreshWeather();
+  loadSiteData();
 
   /* SECTION: pwa */
   var installBtn = document.getElementById("installBtn");
