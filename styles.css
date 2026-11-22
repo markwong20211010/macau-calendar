@@ -160,6 +160,9 @@
   .wx-desc b{font-weight:600;color:var(--ink)}
   .wx-meta{margin-top:3px;font-size:calc(13.65px * var(--font-scale));color:var(--muted);line-height:1.5}
 
+  .wx-carousel{position:relative;min-width:0;overflow:hidden;touch-action:pan-y}
+  .wx-track{display:flex;width:100%;transition:transform .32s ease}
+  .wx-page{flex:0 0 100%;min-width:0}
   .wx-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;min-width:0}
   .wx-day{
     border-radius:10px;padding:8px 2px;text-align:center;min-width:0;
@@ -170,6 +173,30 @@
   .wx-day .wg{font-size:calc(20.8px * var(--font-scale));line-height:1.4;color:var(--ink-soft)}
   .wx-day .wt{font-size:calc(13.65px * var(--font-scale));color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.03em}
   .wx-day .wt i{font-style:normal;color:var(--muted)}
+  .wx-chart-page{padding:0 26px 2px}
+  .wx-chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;font-size:calc(12.35px * var(--font-scale));color:var(--ink-soft)}
+  .wx-chart-key{display:flex;align-items:center;gap:5px;font-size:calc(11px * var(--font-scale))}
+  .wx-chart-key i{width:12px;height:3px;border-radius:2px}
+  .wx-chart-key i.max{background:#b3261e}
+  .wx-chart-key i.min{background:#1f5d8c}
+  .wx-chart{width:100%;height:116px}
+  .wx-chart svg{display:block;width:100%;height:100%;overflow:visible}
+  .wx-chart .grid-line{stroke:#ddd4c4;stroke-width:1;stroke-dasharray:3 4}
+  .wx-chart .axis-label{fill:#8d8578;font-size:10px}
+  .wx-chart .date-label{fill:#8d8578;font-size:9px}
+  .wx-chart .max-line{fill:none;stroke:#b3261e;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .wx-chart .min-line{fill:none;stroke:#1f5d8c;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .wx-chart .max-dot{fill:#b3261e}
+  .wx-chart .min-dot{fill:#1f5d8c}
+  .wx-arrow{
+    position:absolute;top:50%;z-index:2;width:24px;height:34px;margin-top:-17px;
+    border:0;border-radius:999px;background:rgba(255,255,255,.82);color:var(--ink);
+    font-size:calc(18px * var(--font-scale));line-height:1;cursor:pointer;
+  }
+  .wx-prev{left:-2px}.wx-next{right:-2px}
+  .wx-dots{display:flex;justify-content:center;gap:6px;height:8px;margin-top:5px}
+  .wx-dots button{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:#c9c0b1;cursor:pointer}
+  .wx-dots button.on{width:18px;border-radius:999px;background:var(--ink)}
   @media (max-width:420px){
     .wx-day{padding:6px 1px}
     .wx-day .wg{font-size:calc(18.2px * var(--font-scale))}
