@@ -54,22 +54,22 @@
 
   <!-- SECTION: weather -->
   <section class="wx span" aria-label="天氣">
-    <div class="wx-now">
-      <div class="wx-glyph" id="wxGlyph">☁</div>
-      <div class="wx-main">
-        <div class="wx-temp"><span id="wxTemp">19</span>°<small id="wxRange">14–20°</small></div>
-        <div class="wx-desc"><b id="wxText">多雲</b> · <span id="wxExtra">濕度 51% · 北風 3–4 級</span></div>
-        <div class="wx-meta" id="wxMeta">中國天氣網 21:00</div>
-      </div>
-    </div>
     <div class="wx-carousel" id="wxCarousel" aria-label="天氣預報輪播">
       <div class="wx-track" id="wxTrack">
-        <div class="wx-page">
+        <div class="wx-page wx-first-page">
+          <div class="wx-now">
+            <div class="wx-glyph" id="wxGlyph">☁</div>
+            <div class="wx-main">
+              <div class="wx-temp"><span id="wxTemp">19</span>°<small id="wxRange">14–20°</small></div>
+              <div class="wx-desc"><b id="wxText">多雲</b> · <span id="wxExtra">濕度 51% · 北風 3–4 級</span></div>
+              <div class="wx-meta" id="wxMeta">中國天氣網 21:00</div>
+            </div>
+          </div>
           <div class="wx-week" id="wxWeek"></div>
         </div>
         <div class="wx-page wx-chart-page">
           <div class="wx-chart-head">
-            <span>未來 7 天天氣</span>
+            <span>未來 7 天溫度</span>
             <span class="wx-chart-key"><i class="max"></i>最高 <i class="min"></i>最低</span>
           </div>
           <div class="wx-chart" id="wxChart"></div>
@@ -537,7 +537,9 @@
     var maxValue = Math.ceil(Math.max.apply(null, highs) / 2) * 2 + 2;
     if (maxValue === minValue) maxValue = minValue + 4;
 
-    var left = 28, right = 684, top = 8, bottom = 94;
+    var chartWidth = Math.max(wrap.clientWidth, 300);
+    var chartHeight = Math.max(wrap.clientHeight, 120);
+    var left = 30, right = chartWidth - 12, top = 16, bottom = chartHeight - 28;
     var width = right - left;
     var height = bottom - top;
     var xAt = function (index) {
@@ -552,7 +554,7 @@
       }).join(" ");
     };
 
-    var svg = '<svg viewBox="0 0 700 116" role="img" aria-label="未來 7 天最高及最低溫折線圖">';
+    var svg = '<svg viewBox="0 0 ' + chartWidth + " " + chartHeight + '" role="img" aria-label="未來 7 天最高及最低溫折線圖">';
     for (var g = 0; g <= 4; g++) {
       var gy = top + height * g / 4;
       var label = Math.round(maxValue - (maxValue - minValue) * g / 4);
@@ -571,11 +573,13 @@
       var parts = keys[k].split("-");
       var dateLabel = Number(parts[1]) + "/" + Number(parts[2]);
       var anchor = k === 0 ? "start" : (k === keys.length - 1 ? "end" : "middle");
-      svg += '<text class="date-label" x="' + hx.toFixed(1) + '" y="112" text-anchor="' + anchor + '">' + dateLabel + '</text>';
+      svg += '<text class="date-label" x="' + hx.toFixed(1) + '" y="' + (chartHeight - 4) + '" text-anchor="' + anchor + '">' + dateLabel + '</text>';
     }
     svg += "</svg>";
     wrap.innerHTML = svg;
   }
+
+  window.addEventListener("resize", renderWeatherChart);
 
   var wxPage = 0;
   function setWxPage(page) {
@@ -1120,8 +1124,18 @@
   if (iosHint && isIOS && !standalone && location.protocol !== "file:") iosHint.hidden = false;
 
   if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    var refreshingForUpdate = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (refreshingForUpdate) return;
+      refreshingForUpdate = true;
+      window.location.reload();
+    });
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("sw.js").catch(function () {});
+      navigator.serviceWorker.register("sw.js").then(function (registration) {
+        return registration.update();
+      }).catch(function (error) {
+        console.error("Service worker update failed:", error);
+      });
     });
   }
 })();

@@ -1,6 +1,6 @@
 /* 澳門假期翻曆 · 離線快取
-   規則：資料檔（data/*.json）走網路優先，其餘走快取優先。 */
-const CACHE = "macau-cal-repo-v2";
+   HTML/CSS 與資料檔走網路優先，其餘資源走快取優先。 */
+const CACHE = "macau-cal-repo-v3";
 const SHELL = [
   "./",
   "./index.html",
@@ -44,6 +44,26 @@ self.addEventListener("fetch", (event) => {
           return resp;
         })
         .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  const isPageOrStyle = req.mode === "navigate" || /\.(html?|css)$/i.test(url.pathname);
+  if (isPageOrStyle) {
+    event.respondWith(
+      fetch(req)
+        .then((resp) => {
+          if (resp.ok) {
+            const copy = resp.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          }
+          return resp;
+        })
+        .catch(() => caches.match(req).then((cached) => {
+          if (cached) return cached;
+          if (req.mode === "navigate") return caches.match("./index.html");
+          throw new Error("Network unavailable and no cached response");
+        }))
     );
     return;
   }
