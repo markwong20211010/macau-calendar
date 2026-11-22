@@ -1,9 +1,10 @@
 /* 澳門假期翻曆 · 離線快取
    規則：資料檔（data/*.json）走網路優先，其餘走快取優先。 */
-const CACHE = "macau-cal-repo-v1";
+const CACHE = "macau-cal-repo-v2";
 const SHELL = [
   "./",
   "./index.html",
+  "./styles.css",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",

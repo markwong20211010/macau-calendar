@@ -35,6 +35,15 @@
   <p class="sub">一頁一月，向左向右逐月翻。打開就在今天這一頁，並附上未來七天天氣。</p>
   <div class="tools">
     <span class="season-badge"><i></i><span id="seasonText">秋 · 收成</span></span>
+    <label class="font-control" for="fontScale">
+      字體
+      <select id="fontScale" aria-label="字體大小">
+        <option value="85">小</option>
+        <option value="100" selected>標準</option>
+        <option value="115">大</option>
+        <option value="130">特大</option>
+      </select>
+    </label>
     <button class="install" id="installBtn" type="button" hidden>安裝到桌面</button>
   </div>
   <p class="ios-hint" id="iosHint" hidden>iPhone／iPad：Safari 底部「分享」→「加入主畫面」即可安裝。</p>
@@ -181,6 +190,28 @@
 <script>
 (function () {
   "use strict";
+
+  var FONT_SCALE_KEY = "macau-calendar-font-scale";
+  var fontScaleSelect = document.getElementById("fontScale");
+
+  function applyFontScale(value) {
+    var allowed = ["85", "100", "115", "130"];
+    if (allowed.indexOf(value) === -1) value = "100";
+    document.documentElement.style.setProperty("--font-scale", String(Number(value) / 100));
+    if (fontScaleSelect) fontScaleSelect.value = value;
+  }
+
+  var savedFontScale = "100";
+  try { savedFontScale = localStorage.getItem(FONT_SCALE_KEY) || "100"; } catch (e) {}
+  applyFontScale(savedFontScale);
+
+  if (fontScaleSelect) {
+    fontScaleSelect.addEventListener("change", function () {
+      var value = fontScaleSelect.value;
+      applyFontScale(value);
+      try { localStorage.setItem(FONT_SCALE_KEY, value); } catch (e) {}
+    });
+  }
 
   var HOLIDAY_MIN = 2024, HOLIDAY_MAX = 2035;
   var yearMin = 2026, yearMax = 2027;
