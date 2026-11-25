@@ -1,32 +1,26 @@
 {
  "current": {
   "glyph": "☁",
-  "humidity": 63,
-  "temp": 18,
+  "humidity": 79,
+  "temp": 16,
   "text": "陰",
-  "wind": "風速 14.4 km/h"
+  "wind": "風速 10.7 km/h"
  },
  "days": [
   {
-   "code": 53,
-   "d": "2026-11-24",
-   "tmax": 23,
-   "tmin": 18
-  },
-  {
    "code": 51,
    "d": "2026-11-25",
-   "tmax": 19,
+   "tmax": 18,
    "tmin": 16
   },
   {
-   "code": 51,
+   "code": 3,
    "d": "2026-11-26",
-   "tmax": 21,
+   "tmax": 22,
    "tmin": 15
   },
   {
-   "code": 45,
+   "code": 3,
    "d": "2026-11-27",
    "tmax": 25,
    "tmin": 16
@@ -38,22 +32,22 @@
    "tmin": 18
   },
   {
-   "code": 3,
+   "code": 51,
    "d": "2026-11-29",
-   "tmax": 23,
+   "tmax": 22,
    "tmin": 17
   },
   {
    "code": 3,
    "d": "2026-11-30",
    "tmax": 24,
-   "tmin": 20
+   "tmin": 19
   },
   {
-   "code": 2,
+   "code": 3,
    "d": "2026-12-01",
    "tmax": 25,
-   "tmin": 21
+   "tmin": 20
   },
   {
    "code": 3,
@@ -106,12 +100,12 @@
   {
    "code": 51,
    "d": "2026-12-10",
-   "tmax": 22,
+   "tmax": 17,
    "tmin": 14
   }
  ],
  "place": "澳門",
  "source": "Open-Meteo · GitHub Action",
- "stamp": "2026-11-25 16:13 HKT",
- "updated": "2026-11-25T16:13:06+08:00"
+ "stamp": "2026-11-26 03:06 HKT",
+ "updated": "2026-11-26T03:06:59+08:00"
 }
